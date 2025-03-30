@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { userService } from "@/services/user-service"
 import UserProfile from "@/components/user-profile"
@@ -9,7 +9,10 @@ import EditProfileModal from "@/components/edit-profile-modal"
 import { useAuth } from "@/components/auth-provider"
 import { useToast } from "@/components/ui/use-toast"
 
-export default function UserProfilePage({ params }: { params: { id: string } }) {
+export default function UserProfilePage() {
+  const params = useParams()
+  const userId = params.id as string
+
   const [userProfile, setUserProfile] = useState<any>(null)
   const [userQuestions, setUserQuestions] = useState<any[]>([])
   const [userAnswers, setUserAnswers] = useState<any[]>([])
@@ -23,21 +26,10 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   const { user } = useAuth()
   const { toast } = useToast()
 
-  // Get the user ID from params
-  const [userId, setUserId] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function resolveParams() {
-      const resolvedParams = await params
-      setUserId(resolvedParams.id)
-    }
-    resolveParams()
-  }, [params])
-
   // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return;
+      if (!userId) return
 
       setIsLoading(true)
       setError(null)
@@ -81,7 +73,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     try {
       if (user && String(user.id) === userId) {
         console.log("Saving profile...", profileData)
-  
+
         const formData = new FormData()
         formData.append("displayName", profileData.displayName)
         formData.append("location", profileData.location)
@@ -89,18 +81,18 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         if (profileData.avatar) {
           formData.append("avatar", profileData.avatar)
         }
-  
+
         const updatedUser = await userService.updateProfile(formData)
         console.log("Saved!", updatedUser)
-  
+
         setUserProfile({
           ...userProfile,
           displayName: updatedUser.displayName,
           location: updatedUser.location,
           about: updatedUser.about,
-          avatar_url: updatedUser.avatar_url, // don't forget this line!
+          avatar_url: updatedUser.avatar_url,
         })
-  
+
         toast({
           title: "Profile updated",
           description: "Your profile has been updated successfully",
@@ -114,7 +106,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
       })
     }
   }
-  
 
   if (isLoading) {
     return (
@@ -140,8 +131,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
   // Check if this is the current user's profile
   const isCurrentUser = !!(user && String(user.id) === userId)
-
-
 
   return (
     <>
