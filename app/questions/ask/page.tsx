@@ -88,7 +88,7 @@ export default function AskQuestionPage() {
       const question = await questionService.createQuestion({
         title,
         content,
-        tags: selectedTags,
+        tag_names: selectedTags,
       })
 
       toast({

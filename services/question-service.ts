@@ -45,13 +45,13 @@ export interface PaginatedResponse<T> {
 export interface QuestionCreateData {
   title: string
   content: string
-  tags: string[]
+  tag_names: string[]
 }
 
 export interface QuestionUpdateData {
   title?: string
   content?: string
-  tags?: string[]
+  tag_names?: string[]
 }
 
 export const questionService = {
